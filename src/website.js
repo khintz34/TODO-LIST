@@ -1,6 +1,13 @@
-import addTask from "./task.js";
-import { createModal, modalClickAdd, modalClickProject } from "./modals.js";
-import { projectArray, initailizeProjectArray } from "./projects.js";
+import { addTask, addArchiveTask } from "./task.js";
+import {
+  createModal,
+  modalClickAdd,
+  modalClickProject,
+  modalClickRemove,
+  modalClickEdit,
+  modalClickArchive,
+} from "./modals.js";
+import { projectArray, runMonth, runToday, runWeek } from "./projects.js";
 
 const createContainer = () => {
   const container = document.createElement("div");
@@ -10,6 +17,9 @@ const createContainer = () => {
   container.appendChild(createMain());
   container.appendChild(createModal("add"));
   container.appendChild(createModal("project"));
+  container.appendChild(createModal("remove"));
+  container.appendChild(createModal("edit"));
+  container.appendChild(createModal("archive"));
 
   return container;
 };
@@ -40,7 +50,6 @@ function createHeader() {
 }
 
 export function createLeftBar() {
-  console.log("left bar ran");
   const leftBar = document.createElement("div");
   leftBar.setAttribute("id", "left-bar");
   leftBar.textContent = "";
@@ -51,29 +60,30 @@ export function createLeftBar() {
   return leftBar;
 }
 
-function createGroup(id) {
+export function createGroup(id) {
   const group = document.createElement("div");
   group.classList.add("group");
   group.setAttribute("id", id);
+
+  let grpLine = document.createElement("hr");
 
   if (id === "home-group") {
     group.appendChild(createBtn("home", "Home"));
     group.appendChild(createBtn("today", "Today"));
     group.appendChild(createBtn("week", "Week"));
     group.appendChild(createBtn("month", "Month"));
+    group.appendChild(grpLine);
   } else if (id === "project-group") {
     const projectList = document.createElement("h3");
     projectList.textContent = "Project List";
     projectList.setAttribute("id", "project-list");
     group.appendChild(projectList);
 
-    console.log(projectArray.length);
-
     for (let i = 0; i < projectArray.length; i++) {
-      console.log(projectArray[i]);
       group.appendChild(createBtn("project", projectArray[i]));
     }
   } else if (id === "add-group") {
+    group.appendChild(grpLine);
     group.appendChild(createBtn("add-task", "Add Task"));
     group.appendChild(createBtn("add-project", "Add Project"));
     group.appendChild(createBtn("remove-project", "Remove Project"));
@@ -86,18 +96,16 @@ function createGroup(id) {
 }
 
 export function createBtn(id, content) {
-  console.log(`${id} is the ID.   ${content} is the content`);
   const btn = document.createElement("button");
   btn.textContent = content;
   btn.addEventListener("click", (e) => {
-    chooseID(id);
+    chooseID(id, content);
   });
 
   if (id === "project") {
-    console.log("project was the id");
     btn.classList.add("project");
     let projectCounter = 1;
-    btn.setAttribute("id", "project" + projectCounter);
+    btn.setAttribute("id", content);
     projectCounter++;
   } else {
     btn.setAttribute("id", id);
@@ -105,54 +113,100 @@ export function createBtn(id, content) {
 
   return btn;
 }
+export let projectMapArray = [];
 
-function chooseID(id) {
+function chooseID(id, content) {
   const taskArea = document.getElementById("task-area");
   if (id === "add-task") {
     modalClickAdd();
   } else if (id === "add-project") {
     modalClickProject();
+  } else if (id === "remove-project") {
+    if (projectArray.length === 0) {
+      alert("No Projects in Project List. Add a Project!");
+      return;
+    } else {
+      modalClickRemove();
+    }
+  } else if (id === "archive") {
+    modalClickArchive();
+  } else if (id === "home") {
+    appendTasks(allTasks);
+  } else if (id === "today") {
+    runToday();
+  } else if (id === "week") {
+    runWeek();
+  } else if (id === "month") {
+    runMonth();
   } else {
-    console.log("dlicked on something other than add task");
+    projectMapArray = [];
+    allTasks.map(function (obj) {
+      if (obj.project === content) {
+        projectMapArray.push(obj);
+      }
+    });
+    appendTasks(projectMapArray);
   }
 }
 
 export const allTasks = [];
+export const archiveTasks = [];
 
 function createTaskArea() {
   const taskArea = document.createElement("div");
   taskArea.setAttribute("id", "task-area");
 
-  allTasks.push(new newTask("Name", "Project", "Priority", "Date", 0));
+  allTasks.push(new newTask("Name", "Project", "Priority", "Date"));
 
-  taskArea.appendChild(addTask("Name", "Project", "Priority", "Date", 0));
+  taskArea.appendChild(addTask("Name", "Project", "Priority", "Date"));
 
   return taskArea;
 }
 
-export function appendTasks() {
+export function appendTasks(array) {
   const taskArea = document.getElementById("task-area");
   taskArea.textContent = "";
 
-  for (let i = 0; i <= allTasks.length; i++) {
+  let num = 0;
+
+  for (let i = 0; i < array.length; i++) {
     taskArea.appendChild(
       addTask(
-        allTasks[i].title,
-        allTasks[i].project,
-        allTasks[i].priority,
-        allTasks[i].date,
-        1
+        array[i].title,
+        array[i].project,
+        array[i].priority,
+        array[i].date,
+        num
       )
     );
+    num++;
   }
 }
 
-export const newTask = function (title, project, priority, date, num) {
+export const appendArchives = () => {
+  const archiveMain = document.getElementById("archiveMain");
+  archiveMain.textContent = "";
+
+  let num = 0;
+  for (let i = 0; i < archiveTasks.length; i++) {
+    archiveMain.appendChild(
+      addArchiveTask(
+        archiveTasks[i].title,
+        archiveTasks[i].project,
+        archiveTasks[i].priority,
+        archiveTasks[i].date,
+        num
+      )
+    );
+    num++;
+  }
+};
+
+export const newTask = function (title, project, priority, date) {
   this.title = title;
   this.project = project;
   this.priority = priority;
   this.date = date;
-  this.num = num;
 };
 
 function initializeToDoList() {
