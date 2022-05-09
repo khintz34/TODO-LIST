@@ -701,11 +701,8 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "addTask", ()=>addTask
 );
-parcelHelpers.export(exports, "editTaskfromModal", ()=>editTaskfromModal
-);
 parcelHelpers.export(exports, "addArchiveTask", ()=>addArchiveTask
-) // export default addTask;
-;
+);
 var _websiteJs = require("./website.js");
 var _projectsJs = require("./projects.js");
 var _modalsJs = require("./modals.js");
@@ -760,12 +757,6 @@ function addTaskEdit(num) {
     });
     taskEdit.classList.add("task-item");
     return taskEdit;
-}
-function editTaskfromModal() {
-// const taskID = document.getElementById(e.target.parentNode.parentNode.id);
-// let newTitle = prompt("new name?", allTasks[num].title);
-// allTasks[num].title = newTitle;
-// taskID.firstChild.textContent = newTitle;
 }
 function addTaskDelete(num) {
     let taskDelete;
@@ -822,7 +813,211 @@ function addArchiveTask(title, project, priority, date, num) {
     return task;
 }
 
-},{"./website.js":"9ARCS","./projects.js":"lgM2b","./modals.js":"gbXw2","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lgM2b":[function(require,module,exports) {
+},{"./website.js":"9ARCS","./modals.js":"gbXw2","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./projects.js":"lgM2b"}],"gbXw2":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "taskNum", ()=>taskNum
+);
+parcelHelpers.export(exports, "createModal", ()=>createModal
+);
+/////////////////////////////////////////////
+parcelHelpers.export(exports, "createDropDown", ()=>createDropDown
+);
+parcelHelpers.export(exports, "editDropDown", ()=>editDropDown
+);
+parcelHelpers.export(exports, "modalClickAdd", ()=>modalClickAdd
+);
+parcelHelpers.export(exports, "modalClickProject", ()=>modalClickProject
+);
+parcelHelpers.export(exports, "modalClickRemove", ()=>modalClickRemove
+);
+parcelHelpers.export(exports, "modalClickEdit", ()=>modalClickEdit
+);
+parcelHelpers.export(exports, "modalClickArchive", ()=>modalClickArchive
+);
+var _websiteJs = require("./website.js");
+var _projectsJs = require("./projects.js");
+var _dateFns = require("date-fns");
+var _modalExports = require("./modalExports");
+let taskNum;
+const createModal = (id)=>{
+    const modal = document.createElement("div");
+    modal.classList.add("modal-hide");
+    modal.classList.add("modal");
+    if (id === "add") {
+        modal.setAttribute("id", "modal-add");
+        modal.appendChild(createNewModal("form-add", "form-header-add", "Add Task Form", "taskName-add", "select", "pl-add", "pn-add", "fp-add", "fd-add", "modal-add"));
+    } else if (id === "project") {
+        modal.setAttribute("id", "modal-project");
+        modal.appendChild(createNewModal("form-project", "form-header-project", "Add Project Form", "taskName-project", "input", "pl-project", "pn-project", "fp-project", "fd-project", "modal-project"));
+    } else if (id === "remove") {
+        modal.setAttribute("id", "modal-remove");
+        modal.appendChild(createNewModal("form-remove", "form-header-remove", "Remove Project Form", "taskName-remove", "input", "pl-remove", "pn-remove", "fp-remove", "fd-remove", "modal-remove"));
+    } else if (id === "edit") {
+        modal.setAttribute("id", "modal-edit");
+        modal.appendChild(createNewModal("form-edit", "form-header-edit", "Edit Task Form", "name-edit", "input", "pl-edit", "pn-edit", "fp-edit", "fd-edit", "modal-edit"));
+    } else if (id === "archive") {
+        modal.setAttribute("id", "modal-archive");
+        modal.appendChild(createNewModal("form-archive", "form-header-archive", "Completeed Task Arvhice", "na", "na", "na", "na", "na", "na", "modal-archive"));
+    }
+    modal.appendChild(createExitBtn());
+    return modal;
+};
+function createNewModal(id, headingID, headingText, taskID, type, plID, pnID, fpID, fdID, modalID) {
+    const form = document.createElement("form");
+    form.setAttribute("id", id);
+    form.setAttribute("class", "form-main");
+    form.setAttribute("action", "");
+    form.setAttribute("onsubmit", "return false");
+    form.classList.add("form-left");
+    if (id === "form-add") {
+        form.appendChild(_modalExports.createHeader(headingID, headingText));
+        form.appendChild(_modalExports.createLine());
+        form.appendChild(_modalExports.createNameLabel(taskID));
+        form.appendChild(_modalExports.createNameInput(taskID));
+        form.appendChild(_modalExports.createProjectLabel(plID));
+        form.appendChild(_modalExports.createProjectSelect(pnID));
+        form.appendChild(_modalExports.createPriorityLabel(fpID));
+        form.appendChild(_modalExports.createPriorityInput(fpID));
+        form.appendChild(_modalExports.createDateLabel(fdID));
+        form.appendChild(_modalExports.createDateInput(fdID));
+        form.appendChild(_modalExports.createSubmitBtn(id, taskID, pnID, fpID, fdID, modalID));
+    } else if (id === "form-project") {
+        form.appendChild(_modalExports.createHeader(headingID, headingText));
+        form.appendChild(_modalExports.createLine());
+        form.appendChild(_modalExports.createProjectLabel(plID));
+        form.appendChild(_modalExports.createProjectInput(pnID));
+        form.appendChild(_modalExports.createSubmitBtn(id, taskID, pnID, fpID, fdID, modalID));
+    } else if (id === "form-remove") {
+        form.appendChild(_modalExports.createHeader(headingID, headingText));
+        form.appendChild(_modalExports.createLine());
+        form.appendChild(_modalExports.createProjectLabel(plID));
+        form.appendChild(_modalExports.createProjectSelect(pnID));
+        form.appendChild(_modalExports.createSubmitBtn(id, taskID, pnID, fpID, fdID, modalID));
+    } else if (id === "form-edit") {
+        form.appendChild(_modalExports.createHeader(headingID, headingText));
+        form.appendChild(_modalExports.createLine());
+        form.appendChild(_modalExports.createNameLabel(taskID));
+        form.appendChild(_modalExports.createNameInput(taskID));
+        form.appendChild(_modalExports.createProjectLabel(plID));
+        form.appendChild(_modalExports.createProjectSelect(pnID));
+        form.appendChild(_modalExports.createPriorityLabel(fpID));
+        form.appendChild(_modalExports.createPriorityInput(fpID));
+        form.appendChild(_modalExports.createDateLabel(fdID));
+        form.appendChild(_modalExports.createDateInput(fdID));
+        form.appendChild(_modalExports.createSubmitBtn(id, taskID, pnID, fpID, fdID, modalID));
+    } else if (id === "form-archive") {
+        form.appendChild(_modalExports.createHeader(headingID, headingText));
+        form.appendChild(_modalExports.createLine());
+        form.appendChild(_modalExports.createArchiveMain());
+    } else console.log("Didnt hit an ID -- createNewModal Else");
+    return form;
+}
+function createDropDown() {
+    const formProject = document.getElementById("pn-add");
+    const FP2 = document.getElementById("pn-remove");
+    const FP3 = document.getElementById("pn-edit");
+    const option = document.createElement("option");
+    option.value = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
+    option.textContent = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
+    option.id = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
+    FP2.appendChild(option);
+    formProject.appendChild(option.cloneNode(true));
+    FP3.appendChild(option.cloneNode(true));
+}
+function editDropDown(element) {
+    const formProject = document.getElementById("pn-add");
+    const pnRemove = document.getElementById("pn-remove");
+    const pnEdit = document.getElementById("pn-edit");
+    for(let i = 0; i < _projectsJs.projectArray.length; i++)if (_projectsJs.projectArray[i] === element.id) {
+        formProject.removeChild(formProject.options[i]);
+        pnRemove.removeChild(pnRemove.options[i]);
+        pnEdit.removeChild(pnEdit.options[i]);
+        return;
+    }
+}
+function createExitBtn() {
+    const exit = document.createElement("button");
+    exit.textContent = "X";
+    exit.classList.add("exitBtn");
+    exit.onclick = hideModal;
+    return exit;
+}
+const hideModal = ()=>{
+    let modalArray = [
+        "modal-add",
+        "modal-project",
+        "modal-remove",
+        "modal-edit",
+        "modal-archive",
+        "main", 
+    ];
+    for(let i = 0; i < modalArray.length; i++)if (modalArray[i] === "main") {
+        main.classList.remove("blur");
+        main.classList.remove("pointerEvent");
+    } else {
+        const modalElement = document.getElementById(modalArray[i]);
+        modalElement.classList.add("modal-hide");
+        modalElement.classList.remove("modal-show");
+    }
+};
+const modalClickAdd = ()=>{
+    const addPop = document.getElementById("modal-add");
+    addPop.classList.remove("modal-hide");
+    addPop.classList.add("modal-show");
+    main.classList.add("blur");
+    main.classList.add("pointerEvent");
+    const taskName = document.getElementById("taskName-add");
+    const taskProject = document.getElementById("pn-add");
+    const taskPriority = document.getElementById("fp-add");
+    const taskDate = document.getElementById("fd-add");
+    taskName.value = "";
+    taskProject.value = _projectsJs.projectArray[0];
+    taskPriority.value = "Low";
+    taskDate.value = "";
+};
+const modalClickProject = ()=>{
+    const modalPop = document.getElementById("modal-project");
+    modalPop.classList.remove("modal-hide");
+    modalPop.classList.add("modal-show");
+    main.classList.add("blur");
+    main.classList.add("pointerEvent");
+    const project = document.getElementById("pn-project");
+    project.value = "";
+};
+const modalClickRemove = ()=>{
+    const removePop = document.getElementById("modal-remove");
+    removePop.classList.remove("modal-hide");
+    removePop.classList.add("modal-show");
+    main.classList.add("blur");
+    main.classList.add("pointerEvent");
+    const projectRemove = document.getElementById("pn-remove");
+    projectRemove.value = _projectsJs.projectArray[0];
+};
+const modalClickEdit = (name, project, priority, date, num)=>{
+    const editPop = document.getElementById("modal-edit");
+    editPop.classList.remove("modal-hide");
+    editPop.classList.add("modal-show");
+    main.classList.add("blur");
+    main.classList.add("pointerEvent");
+    let nameEdit = document.getElementById("name-edit");
+    let projectEdit = document.getElementById("pn-edit");
+    let priorityEdit = document.getElementById("fp-edit");
+    let dateEdit = document.getElementById("fd-edit");
+    nameEdit.value = name;
+    projectEdit.value = project;
+    priorityEdit.value = priority;
+    dateEdit.value = date;
+    taskNum = num;
+};
+const modalClickArchive = ()=>{
+    const removePop = document.getElementById("modal-archive");
+    removePop.classList.remove("modal-hide");
+    removePop.classList.add("modal-show");
+    main.classList.add("blur");
+};
+
+},{"./website.js":"9ARCS","./projects.js":"lgM2b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","date-fns":"9yHCA","./modalExports":"5Q1a9"}],"lgM2b":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "projectArray", ()=>projectArray
@@ -4345,107 +4540,126 @@ var quartersInYear = 4;
 var secondsInHour = 3600;
 var secondsInMinute = 60;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gbXw2":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5Q1a9":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "createModal", ()=>createModal
+parcelHelpers.export(exports, "createForm", ()=>createForm
 );
-parcelHelpers.export(exports, "modalClickAdd", ()=>modalClickAdd
+parcelHelpers.export(exports, "createHeader", ()=>createHeader
 );
-parcelHelpers.export(exports, "modalClickProject", ()=>modalClickProject
+parcelHelpers.export(exports, "createLine", ()=>createLine
 );
-parcelHelpers.export(exports, "modalClickRemove", ()=>modalClickRemove
+parcelHelpers.export(exports, "createNameLabel", ()=>createNameLabel
 );
-parcelHelpers.export(exports, "modalClickEdit", ()=>modalClickEdit
+parcelHelpers.export(exports, "createNameInput", ()=>createNameInput
 );
-parcelHelpers.export(exports, "modalClickArchive", ()=>modalClickArchive
+parcelHelpers.export(exports, "createProjectLabel", ()=>createProjectLabel
 );
-var _websiteJs = require("./website.js");
-var _projectsJs = require("./projects.js");
-var _taskJs = require("./task.js");
+parcelHelpers.export(exports, "createProjectInput", ()=>createProjectInput
+);
+parcelHelpers.export(exports, "createProjectSelect", ()=>createProjectSelect
+);
+parcelHelpers.export(exports, "createPriorityLabel", ()=>createPriorityLabel
+);
+parcelHelpers.export(exports, "createPriorityInput", ()=>createPriorityInput
+);
+parcelHelpers.export(exports, "createDateLabel", ()=>createDateLabel
+);
+parcelHelpers.export(exports, "createDateInput", ()=>createDateInput
+);
+parcelHelpers.export(exports, "createArchiveMain", ()=>createArchiveMain
+);
+parcelHelpers.export(exports, "createSubmitBtn", ()=>createSubmitBtn
+);
+parcelHelpers.export(exports, "submitAddForm", ()=>submitAddForm
+);
+var _website = require("./website");
+var _projects = require("./projects");
+var _modals = require("./modals");
 var _dateFns = require("date-fns");
-let taskNum;
-const createModal = (mode)=>{
-    const modal = document.createElement("div");
-    modal.classList.add("modal-hide");
-    modal.classList.add("modal");
-    if (mode === "add") {
-        modal.setAttribute("id", "modal-add");
-        modal.appendChild(createAddModal());
-    } else if (mode === "project") {
-        modal.setAttribute("id", "modal-project");
-        modal.appendChild(createProjectModal());
-    } else if (mode === "remove") {
-        modal.setAttribute("id", "modal-remove");
-        modal.appendChild(createRemoveModal());
-    } else if (mode === "edit") {
-        modal.setAttribute("id", "modal-edit");
-        modal.appendChild(createEditModal());
-    } else if (mode === "archive") {
-        modal.setAttribute("id", "modal-archive");
-        modal.appendChild(createArchiveModal());
-    }
-    modal.appendChild(createExitBtn());
-    return modal;
-};
-///ADD MODAL //////////////////
-/////////////////////////////
-function createAddModal() {
+function createForm(id) {
     const form = document.createElement("form");
-    form.setAttribute("id", "form-add");
+    form.setAttribute("id", id);
     form.setAttribute("class", "form-main");
     form.setAttribute("action", "");
     form.setAttribute("onsubmit", "return false");
     form.classList.add("form-left");
+    return form;
+}
+function createHeader(headingID, headingText) {
     const heading = document.createElement("h2");
-    heading.textContent = "Add Task Form";
+    heading.textContent = headingText;
     heading.classList.add("form-item");
-    heading.setAttribute("id", "form-header-add");
+    heading.setAttribute("id", headingID);
     heading.classList.add("full-width");
     heading.classList.add("form-margin");
-    form.appendChild(heading);
+    return heading;
+}
+function createLine() {
     const line = document.createElement("hr");
     line.classList.add("full-width");
-    form.appendChild(line);
+    return line;
+}
+function createNameLabel(taskID) {
     const nameLabel = document.createElement("label");
     nameLabel.textContent = "Task Name: ";
     nameLabel.classList.add("form-item");
     nameLabel.classList.add("form-margin");
-    form.appendChild(nameLabel);
+    nameLabel.setAttribute("id", taskID + "label");
+    return nameLabel;
+}
+function createNameInput(taskID) {
     const formName = document.createElement("input");
     formName.setAttribute("type", "text");
     formName.setAttribute("name", "dname");
     formName.setAttribute("placeholder", "Task Name");
     formName.setAttribute("maxlength", 16);
     formName.classList.add("form-margin");
-    formName.setAttribute("id", "taskName-add");
-    form.appendChild(formName);
+    formName.setAttribute("id", taskID);
+    return formName;
+}
+function createProjectLabel(plID) {
     const projectLabel = document.createElement("label");
-    projectLabel.setAttribute("id", "pl-add");
+    projectLabel.setAttribute("id", plID);
     projectLabel.textContent = "Project Name: ";
     projectLabel.classList.add("form-item");
     projectLabel.classList.add("form-margin");
-    form.appendChild(projectLabel);
-    const formProject = document.createElement("select");
-    formProject.setAttribute("id", "pn-add");
+    return projectLabel;
+}
+function createProjectInput(pnID) {
+    const formProject = document.createElement("input");
+    formProject.setAttribute("id", pnID);
     formProject.setAttribute("name", "Add-project");
     formProject.setAttribute("placeholder", "Project Name");
     formProject.classList.add("form-margin");
-    for(let i = 0; i < _projectsJs.projectArray.length; i++){
+    return formProject;
+}
+function createProjectSelect(pnID) {
+    const formProject = document.createElement("select");
+    formProject.setAttribute("id", pnID);
+    formProject.setAttribute("name", "Add-project");
+    formProject.setAttribute("placeholder", "Project Name");
+    formProject.classList.add("form-margin");
+    for(let i = 0; i < _projects.projectArray.length; i++){
         const option = document.createElement("option");
-        option.value = _projectsJs.projectArray[i];
-        option.textContent = _projectsJs.projectArray[i];
+        option.value = _projects.projectArray[i];
+        option.textContent = _projects.projectArray[i];
         if (i === 0) option.setAttribute("selected", "selected");
         formProject.appendChild(option);
     }
-    form.appendChild(formProject);
+    return formProject;
+}
+function createPriorityLabel(fpID) {
     const priorityLabel = document.createElement("label");
     priorityLabel.textContent = "Priority Level: ";
     priorityLabel.classList.add("form-item");
     priorityLabel.classList.add("form-margin");
-    form.appendChild(priorityLabel);
+    priorityLabel.setAttribute("id", fpID + "label");
+    return priorityLabel;
+}
+function createPriorityInput(fpID) {
     const formPriority = document.createElement("select");
-    formPriority.setAttribute("id", "fp-add");
+    formPriority.setAttribute("id", fpID);
     formPriority.classList.add("form-margin");
     let option1 = document.createElement("option");
     option1.value = "Low";
@@ -4460,414 +4674,125 @@ function createAddModal() {
     formPriority.appendChild(option1);
     formPriority.appendChild(option2);
     formPriority.appendChild(option3);
-    form.appendChild(formPriority);
+    return formPriority;
+}
+function createDateLabel(fdID) {
     const dateLabel = document.createElement("label");
     dateLabel.textContent = "Task Due Date: ";
     dateLabel.classList.add("form-item");
     dateLabel.classList.add("form-margin");
-    form.appendChild(dateLabel);
+    dateLabel.setAttribute("id", fdID + "label");
+    return dateLabel;
+}
+function createDateInput(fdID) {
     const formDate = document.createElement("input");
     formDate.setAttribute("type", "date");
     formDate.setAttribute("name", "date");
     formDate.setAttribute("placeholder", "DD/MM/YYYY");
-    formDate.setAttribute("id", "fd-add");
+    formDate.setAttribute("id", fdID);
     formDate.classList.add("form-margin");
-    form.appendChild(formDate);
-    const formSubmit = document.createElement("button");
-    formSubmit.classList.add("full-width");
-    formSubmit.classList.add("form-margin");
-    formSubmit.classList.add("form-submit");
-    formSubmit.textContent = "Submit";
-    formSubmit.onclick = ()=>{
-        const split = formDate.value.split("-");
-        if (formName.value === "" || formProject.value === "" || formPriority.value === "" || formDate.value === "") alert("All input fields need a value!");
-        else if (_dateFns.isBefore(new Date(split[0], split[1] - 1, split[2]), new Date())) alert("The Due Date should be AFTER today's date!");
-        else {
-            _websiteJs.allTasks.push(new _websiteJs.newTask(formName.value, formProject.value, formPriority.value, formDate.value));
-            const addPop = document.getElementById("modal-add");
-            addPop.classList.remove("modal-show");
-            addPop.classList.add("modal-hide");
-            main.classList.remove("blur");
-            main.classList.remove("pointerEvent");
-            formName.value = "";
-            formProject.value = "";
-            formPriority.value = "Low";
-            formDate.value = "";
-            _websiteJs.appendTasks(_websiteJs.allTasks);
-        }
-    };
-    form.appendChild(formSubmit);
-    return form;
+    return formDate;
 }
-///////////////////////////////////////////
-/////////ADD PROJECT MODAL////////////
-function createProjectModal() {
-    const form = document.createElement("form");
-    form.setAttribute("id", "form-project");
-    form.setAttribute("class", "form-main");
-    form.setAttribute("action", "");
-    form.setAttribute("onsubmit", "return false");
-    form.classList.add("form-left");
-    const heading = document.createElement("h2");
-    heading.textContent = "Add Project Form";
-    heading.classList.add("form-item");
-    heading.setAttribute("id", "form-header-project");
-    heading.classList.add("full-width");
-    heading.classList.add("form-margin");
-    form.appendChild(heading);
-    const line = document.createElement("hr");
-    line.classList.add("full-width");
-    form.appendChild(line);
-    const projectLabel = document.createElement("label");
-    projectLabel.setAttribute("id", "pl-project");
-    projectLabel.textContent = "Project Name: ";
-    projectLabel.classList.add("form-item");
-    projectLabel.classList.add("form-margin");
-    form.appendChild(projectLabel);
-    const formProject = document.createElement("input");
-    formProject.setAttribute("id", "pn-project");
-    formProject.setAttribute("type", "text");
-    formProject.setAttribute("name", "dproject");
-    formProject.setAttribute("placeholder", "Project Name");
-    formProject.setAttribute("maxlength", 12);
-    formProject.classList.add("form-margin");
-    form.appendChild(formProject);
-    const formSubmit = document.createElement("button");
-    formSubmit.classList.add("full-width");
-    formSubmit.classList.add("form-margin");
-    formSubmit.classList.add("form-submit");
-    formSubmit.textContent = "Submit";
-    formSubmit.onclick = ()=>{
-        if (formProject.value === "") alert("Must type a Project Name to submit");
-        else if (_projectsJs.projectArray.length >= 4) {
-            alert("Maximum amount (4) of Projects reached. Remove a project to add another.");
-            const projectPop = document.getElementById("modal-project");
-            projectPop.classList.remove("modal-show");
-            projectPop.classList.add("modal-hide");
-            main.classList.remove("blur");
-            formProject.value = "";
-            main.classList.remove("pointerEvent");
-        } else {
-            _projectsJs.projectArray.push(formProject.value);
-            const PG = document.getElementById("project-group");
-            PG.appendChild(_websiteJs.createBtn("project", formProject.value));
-            const projectPop = document.getElementById("modal-project");
-            projectPop.classList.remove("modal-show");
-            projectPop.classList.add("modal-hide");
-            main.classList.remove("blur");
-            createDropDown();
-            formProject.value = "";
-            main.classList.remove("pointerEvent");
-        }
-    };
-    form.appendChild(formSubmit);
-    return form;
-}
-///////////////////////////////////////////
-///REMOVE MODAL/////////
-function createRemoveModal() {
-    const form = document.createElement("form");
-    form.setAttribute("id", "form-remove");
-    form.setAttribute("class", "form-main");
-    form.setAttribute("action", "");
-    form.setAttribute("onsubmit", "return false");
-    form.classList.add("form-left");
-    const heading = document.createElement("h2");
-    heading.textContent = "Remove Project Form";
-    heading.classList.add("form-item");
-    heading.setAttribute("id", "form-header-remove");
-    heading.classList.add("full-width");
-    heading.classList.add("form-margin");
-    form.appendChild(heading);
-    const line = document.createElement("hr");
-    line.classList.add("full-width");
-    form.appendChild(line);
-    const formProject = document.createElement("select");
-    formProject.setAttribute("id", "pn-remove");
-    formProject.setAttribute("name", "dproject");
-    formProject.setAttribute("placeholder", "Project Name");
-    formProject.classList.add("form-margin");
-    for(let i = 0; i < _projectsJs.projectArray.length; i++){
-        const option = document.createElement("option");
-        option.value = _projectsJs.projectArray[i];
-        option.textContent = _projectsJs.projectArray[i];
-        formProject.appendChild(option);
-    }
-    form.appendChild(formProject);
-    const formSubmit = document.createElement("button");
-    formSubmit.classList.add("full-width");
-    formSubmit.classList.add("form-margin");
-    formSubmit.classList.add("form-submit");
-    formSubmit.textContent = "Remove Project";
-    formSubmit.onclick = ()=>{
-        let elementRemove = document.getElementById(formProject.value);
-        editDropDown(elementRemove);
-        _projectsJs.projectArray.splice(_projectsJs.projectArray.indexOf(formProject.value) - 1, 1);
-        elementRemove.parentNode.removeChild(elementRemove);
-        const removePop = document.getElementById("modal-remove");
-        removePop.classList.remove("modal-show");
-        removePop.classList.add("modal-hide");
-        main.classList.remove("blur");
-        formProject.value = _projectsJs.projectArray[0];
-        main.classList.remove("pointerEvent");
-    };
-    form.appendChild(formSubmit);
-    return form;
-}
-//////////////////////////////////////////////////
-//EDIT MODAL//////////////////////
-function createEditModal() {
-    const form = document.createElement("form");
-    form.setAttribute("id", "form-edit");
-    form.setAttribute("class", "form-main");
-    form.setAttribute("action", "");
-    form.setAttribute("onsubmit", "return false");
-    form.classList.add("form-left");
-    const heading = document.createElement("h2");
-    heading.textContent = "Edit Task Form";
-    heading.classList.add("form-item");
-    heading.setAttribute("id", "form-header-edit");
-    heading.classList.add("full-width");
-    heading.classList.add("form-margin");
-    form.appendChild(heading);
-    const line = document.createElement("hr");
-    line.classList.add("full-width");
-    form.appendChild(line);
-    const nameLabel = document.createElement("label");
-    nameLabel.textContent = "Task Name: ";
-    nameLabel.classList.add("form-item");
-    nameLabel.classList.add("form-margin");
-    form.appendChild(nameLabel);
-    const formName = document.createElement("input");
-    formName.setAttribute("id", "name-edit");
-    formName.setAttribute("type", "text");
-    formName.setAttribute("name", "name");
-    formName.setAttribute("label", "Project Name");
-    formName.setAttribute("placeholder", "Task Name");
-    formName.setAttribute("maxlength", 16);
-    formName.classList.add("form-margin");
-    form.appendChild(formName);
-    const projectLabel = document.createElement("label");
-    projectLabel.setAttribute("id", "pl-edit");
-    projectLabel.textContent = "Project Name: ";
-    projectLabel.classList.add("form-item");
-    projectLabel.classList.add("form-margin");
-    form.appendChild(projectLabel);
-    const formProject = document.createElement("select");
-    formProject.setAttribute("id", "pn-edit");
-    formProject.setAttribute("name", "Add-project");
-    formProject.setAttribute("placeholder", "Project Name");
-    formProject.classList.add("form-margin");
-    for(let i = 0; i < _projectsJs.projectArray.length; i++){
-        const option = document.createElement("option");
-        option.value = _projectsJs.projectArray[i];
-        option.textContent = _projectsJs.projectArray[i];
-        formProject.appendChild(option);
-    }
-    form.appendChild(formProject);
-    const priorityLabel = document.createElement("label");
-    priorityLabel.textContent = "Priority Level: ";
-    priorityLabel.classList.add("form-item");
-    priorityLabel.classList.add("form-margin");
-    form.appendChild(priorityLabel);
-    const formPriority = document.createElement("select");
-    formPriority.setAttribute("id", "priority-edit");
-    formPriority.classList.add("form-margin");
-    let option1 = document.createElement("option");
-    option1.value = "Low";
-    option1.textContent = "Low";
-    let option2 = document.createElement("option");
-    option2.value = "Medium";
-    option2.textContent = "Medium";
-    let option3 = document.createElement("option");
-    option3.value = "High";
-    option3.textContent = "High";
-    formPriority.appendChild(option1);
-    formPriority.appendChild(option2);
-    formPriority.appendChild(option3);
-    form.appendChild(formPriority);
-    const dateLabel = document.createElement("label");
-    dateLabel.textContent = "Task Due Date: ";
-    dateLabel.classList.add("form-item");
-    dateLabel.classList.add("form-margin");
-    form.appendChild(dateLabel);
-    const formDate = document.createElement("input");
-    formDate.setAttribute("id", "date-edit");
-    formDate.setAttribute("type", "date");
-    formDate.setAttribute("name", "date");
-    formDate.setAttribute("placeholder", "DD/MM/YYYY");
-    formDate.classList.add("form-margin");
-    form.appendChild(formDate);
-    const formSubmit = document.createElement("button");
-    formSubmit.classList.add("full-width");
-    formSubmit.classList.add("form-margin");
-    formSubmit.classList.add("form-submit");
-    formSubmit.textContent = "Submit";
-    formSubmit.onclick = ()=>{
-        const split = formDate.value.split("-");
-        if (formName.value === "" || formProject.value === "" || formPriority.value === "" || formDate.value === "") alert("All input fields need a value!");
-        else if (_dateFns.isBefore(new Date(split[0], split[1] - 1, split[2]), new Date())) alert("Due Date needs to be AFTER today's date!");
-        else {
-            _websiteJs.allTasks[taskNum].title = formName.value;
-            _websiteJs.allTasks[taskNum].project = formProject.value;
-            _websiteJs.allTasks[taskNum].priority = formPriority.value;
-            _websiteJs.allTasks[taskNum].date = formDate.value;
-            _websiteJs.appendTasks(_websiteJs.allTasks);
-            hideModal();
-            formName.value = "";
-            formProject.value = "";
-            formPriority.value = "Low";
-            formDate.value = "";
-            main.classList.remove("pointerEvent");
-        }
-    };
-    form.appendChild(formSubmit);
-    return form;
-}
-/////////////////////////////////////////////
-////ARCHIVE MODAL////////////
-function createArchiveModal() {
-    const form = document.createElement("form");
-    form.setAttribute("id", "form-archive");
-    form.setAttribute("class", "form-main");
-    form.setAttribute("action", "");
-    form.setAttribute("onsubmit", "return false");
-    form.classList.add("form-left");
-    const heading = document.createElement("h2");
-    heading.textContent = "Completed Task Archive";
-    heading.classList.add("form-item");
-    heading.setAttribute("id", "form-header-arhive");
-    heading.classList.add("full-width");
-    heading.classList.add("form-margin");
-    form.appendChild(heading);
-    const line = document.createElement("hr");
-    line.classList.add("full-width");
-    form.appendChild(line);
+function createArchiveMain() {
     const archiveMain = document.createElement("div");
     archiveMain.setAttribute("id", "archiveMain");
-    form.appendChild(archiveMain);
-    return form;
+    return archiveMain;
 }
-/////////////////////////////////////////////
-function createDropDown() {
-    const formProject = document.getElementById("pn-add");
-    const FP2 = document.getElementById("pn-remove");
-    const FP3 = document.getElementById("pn-edit");
-    const option = document.createElement("option");
-    option.value = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
-    option.textContent = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
-    option.id = _projectsJs.projectArray[_projectsJs.projectArray.length - 1];
-    FP2.appendChild(option);
-    formProject.appendChild(option.cloneNode(true));
-    FP3.appendChild(option.cloneNode(true));
+function createSubmitBtn(id, name, project, priority, date, modalID) {
+    const formSubmit = document.createElement("button");
+    formSubmit.classList.add("full-width");
+    formSubmit.classList.add("form-margin");
+    formSubmit.classList.add("form-submit");
+    formSubmit.textContent = "Submit";
+    formSubmit.setAttribute("id", id + "btn");
+    const input1 = id;
+    const input2 = name;
+    const input3 = project;
+    const input4 = priority;
+    const input5 = date;
+    const input6 = modalID;
+    formSubmit.onclick = (input1, input2, input3, input4, input5, input6)=>{
+        if (formSubmit.id === "form-addbtn") submitAddForm(id, name, project, priority, date, modalID);
+        else if (id === "form-project") submitProjectForm(id, project, modalID);
+        else if (id === "form-remove") submitRemoveForm(id, project, modalID);
+        else if (id === "form-edit") submitEditForm(id, name, project, priority, date, modalID);
+    };
+    return formSubmit;
 }
-function editDropDown(element) {
-    const formProject = document.getElementById("pn-add");
-    const pnRemove = document.getElementById("pn-remove");
-    const pnEdit = document.getElementById("pn-edit");
-    for(let i = 0; i < _projectsJs.projectArray.length; i++)if (_projectsJs.projectArray[i] === element.id) {
-        formProject.removeChild(formProject.options[i]);
-        pnRemove.removeChild(pnRemove.options[i]);
-        pnEdit.removeChild(pnEdit.options[i]);
-        return;
-    }
+function updateModalClasses(modalID) {
+    const modal = document.getElementById(modalID);
+    modal.classList.remove("modal-show");
+    modal.classList.add("modal-hide");
+    main.classList.remove("blur");
+    main.classList.remove("pointerEvent");
+    return modal;
 }
-// const listenForClicks = (id) => {
-//   // if (id === 'off') {
-//   //   document.removeEventListener('click')
-//   // }
-//   //Need to turn on and off event listener when a modal is open / closed
-//   const specifiedElement = document.getElementById(id);
-//   console.log(id);
-//   document.addEventListener("click", function (event) {
-//     let isClickInside = specifiedElement.contains(event.target);
-//     if (!isClickInside) {
-//       console.log("CLICK WAS OUTSIDE");
-//     }
-//   });
-// };
-function createExitBtn() {
-    const exit = document.createElement("button");
-    exit.textContent = "X";
-    exit.classList.add("exitBtn");
-    exit.onclick = hideModal;
-    return exit;
-}
-const hideModal = ()=>{
-    let modalArray = [
-        "modal-add",
-        "modal-project",
-        "modal-remove",
-        "modal-edit",
-        "modal-archive",
-        "main", 
-    ];
-    for(let i = 0; i < modalArray.length; i++)if (modalArray[i] === "main") {
-        main.classList.remove("blur");
-        main.classList.remove("pointerEvent");
+const submitAddForm = (id, name, project, priority, date, modalID)=>{
+    const modalAdd = document.getElementById(id);
+    const nameValue = document.getElementById(name);
+    const projectValue = document.getElementById(project);
+    const priorityValue = document.getElementById(priority);
+    const dateValue = document.getElementById(date);
+    const split = dateValue.value.split("-");
+    if (nameValue.value === "" || projectValue.value === "" || priorityValue.value === "" || dateValue.value === "") alert("All input fields need a value!");
+    else if (_dateFns.isBefore(new Date(split[0], split[1] - 1, split[2]), new Date())) alert("The Due Date should be AFTER today's date!");
+    else _website.allTasks.push(new _website.newTask(nameValue.value, projectValue.value, priorityValue.value, dateValue.value));
+    updateModalClasses(modalID);
+    nameValue.value = "";
+    projectValue.value = "";
+    priorityValue.value = "";
+    dateValue.value = "";
+    _website.appendTasks(_website.allTasks);
+};
+function submitProjectForm(id, project, modalID) {
+    const modalAdd = document.getElementById(id);
+    const projectValue = document.getElementById(project);
+    if (projectValue.value === "") alert("Must type a Project Name to submit");
+    else if (_projects.projectArray.length >= 4) {
+        alert("Maximum amount (4) of Projects reached. Remove a project to add another.");
+        updateModalClasses(modalID);
     } else {
-        const modalElement = document.getElementById(modalArray[i]);
-        modalElement.classList.add("modal-hide");
-        modalElement.classList.remove("modal-show");
+        _projects.projectArray.push(projectValue.value);
+        const PG = document.getElementById("project-group");
+        PG.appendChild(_website.createBtn("project", projectValue.value));
+        projectValue.value = "";
+        updateModalClasses(modalID);
+        _modals.createDropDown();
     }
-};
-const modalClickAdd = ()=>{
-    const addPop = document.getElementById("modal-add");
-    addPop.classList.remove("modal-hide");
-    addPop.classList.add("modal-show");
-    main.classList.add("blur");
-    main.classList.add("pointerEvent");
-    const taskName = document.getElementById("taskName-add");
-    const taskProject = document.getElementById("pn-add");
-    const taskPriority = document.getElementById("fp-add");
-    const taskDate = document.getElementById("fd-add");
-    taskName.value = "";
-    taskProject.value = _projectsJs.projectArray[0];
-    taskPriority.value = "Low";
-    taskDate.value = "";
-// listenForClicks("modal-add");
-};
-const modalClickProject = ()=>{
-    const modalPop = document.getElementById("modal-project");
-    modalPop.classList.remove("modal-hide");
-    modalPop.classList.add("modal-show");
-    main.classList.add("blur");
-    main.classList.add("pointerEvent");
-    const project = document.getElementById("pn-project");
-    project.value = "";
-};
-const modalClickRemove = ()=>{
-    const removePop = document.getElementById("modal-remove");
-    removePop.classList.remove("modal-hide");
-    removePop.classList.add("modal-show");
-    main.classList.add("blur");
-    main.classList.add("pointerEvent");
-    const projectRemove = document.getElementById("pn-remove");
-    projectRemove.value = _projectsJs.projectArray[0];
-};
-const modalClickEdit = (name, project, priority, date, num)=>{
-    const editPop = document.getElementById("modal-edit");
-    editPop.classList.remove("modal-hide");
-    editPop.classList.add("modal-show");
-    main.classList.add("blur");
-    main.classList.add("pointerEvent");
-    let nameEdit = document.getElementById("name-edit");
-    let projectEdit = document.getElementById("pn-edit");
-    let priorityEdit = document.getElementById("priority-edit");
-    let dateEdit = document.getElementById("date-edit");
-    nameEdit.value = name;
-    projectEdit.value = project;
-    priorityEdit.value = priority;
-    dateEdit.value = date;
-    taskNum = num;
-};
-const modalClickArchive = ()=>{
-    const removePop = document.getElementById("modal-archive");
-    removePop.classList.remove("modal-hide");
-    removePop.classList.add("modal-show");
-    main.classList.add("blur");
-};
+}
+function submitEditForm(id, name, project, priority, date, modalID) {
+    const modalAdd = document.getElementById(id);
+    const nameValue = document.getElementById(name);
+    const projectValue = document.getElementById(project);
+    const priorityValue = document.getElementById(priority);
+    const dateValue = document.getElementById(date);
+    const split = dateValue.value.split("-");
+    if (nameValue.value === "" || projectValue.value === "" || priorityValue.value === "" || dateValue.value === "") alert("All input fields need a value!");
+    else if (_dateFns.isBefore(new Date(split[0], split[1] - 1, split[2]), new Date())) alert("Due Date needs to be AFTER today's date!");
+    else {
+        _website.allTasks[_modals.taskNum].title = nameValue.value;
+        _website.allTasks[_modals.taskNum].project = projectValue.value;
+        _website.allTasks[_modals.taskNum].priority = priorityValue.value;
+        _website.allTasks[_modals.taskNum].date = dateValue.value;
+        updateModalClasses(modalID);
+        nameValue.value = "";
+        projectValue.value = "";
+        priorityValue.value = "";
+        dateValue.value = "";
+        _website.appendTasks(_website.allTasks);
+    }
+}
+function submitRemoveForm(id, project, modalID) {
+    const modalAdd = document.getElementById(id);
+    const projectValue = document.getElementById(project);
+    let elementRemove = document.getElementById(projectValue.value);
+    _modals.editDropDown(elementRemove);
+    _projects.projectArray.splice(_projects.projectArray.indexOf(projectValue.value) - 1, 1);
+    elementRemove.parentNode.removeChild(elementRemove);
+    projectValue.value = _projects.projectArray[0];
+    updateModalClasses(modalID);
+}
 
-},{"./website.js":"9ARCS","./projects.js":"lgM2b","./task.js":"lODYT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","date-fns":"9yHCA"}]},["dUgAT","bitlD"], "bitlD", "parcelRequire94c2")
+},{"./website":"9ARCS","./projects":"lgM2b","./modals":"gbXw2","date-fns":"9yHCA","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["dUgAT","bitlD"], "bitlD", "parcelRequire94c2")
 
 //# sourceMappingURL=index.9da951d5.js.map

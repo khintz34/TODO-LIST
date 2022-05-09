@@ -4,7 +4,6 @@ import {
   modalClickAdd,
   modalClickProject,
   modalClickRemove,
-  modalClickEdit,
   modalClickArchive,
 } from "./modals.js";
 import { projectArray, runMonth, runToday, runWeek } from "./projects.js";
@@ -64,7 +63,6 @@ export function createGroup(id) {
   const group = document.createElement("div");
   group.classList.add("group");
   group.setAttribute("id", id);
-
   let grpLine = document.createElement("hr");
 
   if (id === "home-group") {

@@ -78,13 +78,6 @@ function addTaskEdit(num) {
   return taskEdit;
 }
 
-export function editTaskfromModal() {
-  // const taskID = document.getElementById(e.target.parentNode.parentNode.id);
-  // let newTitle = prompt("new name?", allTasks[num].title);
-  // allTasks[num].title = newTitle;
-  // taskID.firstChild.textContent = newTitle;
-}
-
 function addTaskDelete(num) {
   let taskDelete;
 
@@ -167,5 +160,3 @@ export function addArchiveTask(title, project, priority, date, num) {
 
   return task;
 }
-
-// export default addTask;
