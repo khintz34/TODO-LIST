@@ -96,6 +96,11 @@
   margin-right: 2vh;
   padding: 5px;
   display: grid;
+  overflow: scroll;
+}
+
+#modal-archive {
+  overflow: scroll;
 }
 
 .task-item {
@@ -167,6 +172,7 @@ button:hover {
   flex-direction: column;
   justify-content: center;
   display: flex;
+  overflow: scroll;
 }
 
 .main-bg {

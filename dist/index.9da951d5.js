@@ -534,6 +534,10 @@ _websiteJsDefault.default();
 },{"./website.js":"9ARCS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9ARCS":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "allTasks", ()=>allTasks
+);
+parcelHelpers.export(exports, "archiveTasks", ()=>archiveTasks
+);
 parcelHelpers.export(exports, "createLeftBar", ()=>createLeftBar
 );
 parcelHelpers.export(exports, "createGroup", ()=>createGroup
@@ -541,10 +545,6 @@ parcelHelpers.export(exports, "createGroup", ()=>createGroup
 parcelHelpers.export(exports, "createBtn", ()=>createBtn
 );
 parcelHelpers.export(exports, "projectMapArray", ()=>projectMapArray
-);
-parcelHelpers.export(exports, "allTasks", ()=>allTasks
-);
-parcelHelpers.export(exports, "archiveTasks", ()=>archiveTasks
 );
 parcelHelpers.export(exports, "appendTasks", ()=>appendTasks
 );
@@ -555,6 +555,8 @@ parcelHelpers.export(exports, "newTask", ()=>newTask
 var _taskJs = require("./task.js");
 var _modalsJs = require("./modals.js");
 var _projectsJs = require("./projects.js");
+const allTasks = [];
+const archiveTasks = [];
 const createContainer = ()=>{
     const container = document.createElement("div");
     container.setAttribute("id", "container");
@@ -565,6 +567,10 @@ const createContainer = ()=>{
     container.appendChild(_modalsJs.createModal("remove"));
     container.appendChild(_modalsJs.createModal("edit"));
     container.appendChild(_modalsJs.createModal("archive"));
+    const archiveMain = document.getElementById("archiveMain");
+    console.log(archiveMain);
+    let storageCheck = JSON.parse(localStorage.getItem("archive"));
+    if (storageCheck !== null) for(let i = 0; i < storageCheck.length; i++)archiveTasks.push(storageCheck[i]);
     return container;
 };
 function createMain() {
@@ -657,33 +663,39 @@ function chooseID(id, content) {
         appendTasks(projectMapArray);
     }
 }
-const allTasks = [];
-const archiveTasks = [];
 function createTaskArea() {
     const taskArea = document.createElement("div");
     taskArea.setAttribute("id", "task-area");
-    allTasks.push(new newTask("Name", "Project", "Priority", "Date"));
-    taskArea.appendChild(_taskJs.addTask("Name", "Project", "Priority", "Date"));
+    const storageArray = JSON.parse(localStorage.getItem("task"));
+    if (storageArray === null || storageArray.length === 0) {
+        allTasks.push(new newTask("Name", "Project", "Priority", "Date"));
+        taskArea.appendChild(_taskJs.addTask("Name", "Project", "Priority", "Date"));
+    } else for(let i = 0; i < storageArray.length; i++){
+        allTasks.push(new newTask(storageArray[i].title, storageArray[i].project, storageArray[i].priority, storageArray[i].date));
+        taskArea.appendChild(_taskJs.addTask(storageArray[i].title, storageArray[i].project, storageArray[i].priority, storageArray[i].date));
+    }
     return taskArea;
 }
 function appendTasks(array) {
     const taskArea = document.getElementById("task-area");
     taskArea.textContent = "";
+    window.localStorage.setItem("task", JSON.stringify(allTasks));
     let num = 0;
     for(let i = 0; i < array.length; i++){
         taskArea.appendChild(_taskJs.addTask(array[i].title, array[i].project, array[i].priority, array[i].date, num));
         num++;
     }
 }
-const appendArchives = ()=>{
+function appendArchives() {
     const archiveMain = document.getElementById("archiveMain");
     archiveMain.textContent = "";
+    const storageArchive = JSON.parse(localStorage.getItem("archive"));
     let num = 0;
-    for(let i = 0; i < archiveTasks.length; i++){
-        archiveMain.appendChild(_taskJs.addArchiveTask(archiveTasks[i].title, archiveTasks[i].project, archiveTasks[i].priority, archiveTasks[i].date, num));
+    for(let i = 0; i < storageArchive.length; i++){
+        archiveMain.appendChild(_taskJs.addArchiveTask(storageArchive[i].title, storageArchive[i].project, storageArchive[i].priority, storageArchive[i].date, num));
         num++;
     }
-};
+}
 const newTask = function(title, project, priority, date) {
     this.title = title;
     this.project = project;
@@ -772,6 +784,9 @@ function addTaskDelete(num) {
             num = 0;
             _websiteJs.allTasks.splice(num, 1);
         } else _websiteJs.allTasks.splice(num, 1);
+        localStorage.removeItem("task");
+        console.log(`localStorage.getItem after clear: ${localStorage.getItem("task")}`);
+        localStorage.setItem("task", JSON.stringify(_websiteJs.allTasks));
     });
     taskDelete.classList.add("task-item");
     return taskDelete;
@@ -794,6 +809,10 @@ function addTaskComplete(num) {
             if (obj.title === titleTest && obj.project === projectTest && obj.priority === priorityTest && obj.date === dateTest) {
                 _websiteJs.archiveTasks.push(new _websiteJs.newTask(titleTest, projectTest, priorityTest, dateTest));
                 _websiteJs.allTasks.splice(index, 1);
+                localStorage.removeItem("task");
+                localStorage.setItem("task", JSON.stringify(_websiteJs.allTasks));
+                localStorage.setItem("archive", JSON.stringify(_websiteJs.archiveTasks));
+                console.log(_websiteJs.archiveTasks);
             }
         });
         _websiteJs.appendArchives();
@@ -858,7 +877,7 @@ const createModal = (id)=>{
         modal.appendChild(createNewModal("form-edit", "form-header-edit", "Edit Task Form", "name-edit", "input", "pl-edit", "pn-edit", "fp-edit", "fd-edit", "modal-edit"));
     } else if (id === "archive") {
         modal.setAttribute("id", "modal-archive");
-        modal.appendChild(createNewModal("form-archive", "form-header-archive", "Completeed Task Arvhice", "na", "na", "na", "na", "na", "na", "modal-archive"));
+        modal.appendChild(createNewModal("form-archive", "form-header-archive", "Completed Task Archive", "na", "na", "na", "na", "na", "na", "modal-archive"));
     }
     modal.appendChild(createExitBtn());
     return modal;
@@ -1015,6 +1034,7 @@ const modalClickArchive = ()=>{
     removePop.classList.remove("modal-hide");
     removePop.classList.add("modal-show");
     main.classList.add("blur");
+    _websiteJs.appendArchives();
 };
 
 },{"./website.js":"9ARCS","./projects.js":"lgM2b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","date-fns":"9yHCA","./modalExports":"5Q1a9"}],"lgM2b":[function(require,module,exports) {
@@ -4573,6 +4593,8 @@ parcelHelpers.export(exports, "createSubmitBtn", ()=>createSubmitBtn
 );
 parcelHelpers.export(exports, "submitAddForm", ()=>submitAddForm
 );
+parcelHelpers.export(exports, "updateLS", ()=>updateLS
+);
 var _website = require("./website");
 var _projects = require("./projects");
 var _modals = require("./modals");
@@ -4696,6 +4718,7 @@ function createDateInput(fdID) {
 function createArchiveMain() {
     const archiveMain = document.createElement("div");
     archiveMain.setAttribute("id", "archiveMain");
+    archiveMain.textContent = "";
     return archiveMain;
 }
 function createSubmitBtn(id, name, project, priority, date, modalID) {
@@ -4736,7 +4759,10 @@ const submitAddForm = (id, name, project, priority, date, modalID)=>{
     const split = dateValue.value.split("-");
     if (nameValue.value === "" || projectValue.value === "" || priorityValue.value === "" || dateValue.value === "") alert("All input fields need a value!");
     else if (_dateFns.isBefore(new Date(split[0], split[1] - 1, split[2]), new Date())) alert("The Due Date should be AFTER today's date!");
-    else _website.allTasks.push(new _website.newTask(nameValue.value, projectValue.value, priorityValue.value, dateValue.value));
+    else {
+        _website.allTasks.push(new _website.newTask(nameValue.value, projectValue.value, priorityValue.value, dateValue.value));
+        window.localStorage.setItem("task", "test");
+    }
     updateModalClasses(modalID);
     nameValue.value = "";
     projectValue.value = "";
@@ -4791,6 +4817,13 @@ function submitRemoveForm(id, project, modalID) {
     elementRemove.parentNode.removeChild(elementRemove);
     projectValue.value = _projects.projectArray[0];
     updateModalClasses(modalID);
+}
+function updateLS() {
+    let values = [];
+    let keys = Object.keys(localStorage);
+    let i = keys.length;
+    while(i--)values.push(localStorage.getItem(keys[i]));
+    document.getElementById("test").textContent = values;
 }
 
 },{"./website":"9ARCS","./projects":"lgM2b","./modals":"gbXw2","date-fns":"9yHCA","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["dUgAT","bitlD"], "bitlD", "parcelRequire94c2")

@@ -8,6 +8,9 @@ import {
 } from "./modals.js";
 import { projectArray, runMonth, runToday, runWeek } from "./projects.js";
 
+export const allTasks = [];
+export const archiveTasks = [];
+
 const createContainer = () => {
   const container = document.createElement("div");
   container.setAttribute("id", "container");
@@ -19,6 +22,18 @@ const createContainer = () => {
   container.appendChild(createModal("remove"));
   container.appendChild(createModal("edit"));
   container.appendChild(createModal("archive"));
+
+  const archiveMain = document.getElementById("archiveMain");
+
+  console.log(archiveMain);
+
+  let storageCheck = JSON.parse(localStorage.getItem("archive"));
+
+  if (storageCheck !== null) {
+    for (let i = 0; i < storageCheck.length; i++) {
+      archiveTasks.push(storageCheck[i]);
+    }
+  }
 
   return container;
 };
@@ -147,16 +162,35 @@ function chooseID(id, content) {
   }
 }
 
-export const allTasks = [];
-export const archiveTasks = [];
-
 function createTaskArea() {
   const taskArea = document.createElement("div");
   taskArea.setAttribute("id", "task-area");
 
-  allTasks.push(new newTask("Name", "Project", "Priority", "Date"));
+  const storageArray = JSON.parse(localStorage.getItem("task"));
 
-  taskArea.appendChild(addTask("Name", "Project", "Priority", "Date"));
+  if (storageArray === null || storageArray.length === 0) {
+    allTasks.push(new newTask("Name", "Project", "Priority", "Date"));
+    taskArea.appendChild(addTask("Name", "Project", "Priority", "Date"));
+  } else {
+    for (let i = 0; i < storageArray.length; i++) {
+      allTasks.push(
+        new newTask(
+          storageArray[i].title,
+          storageArray[i].project,
+          storageArray[i].priority,
+          storageArray[i].date
+        )
+      );
+      taskArea.appendChild(
+        addTask(
+          storageArray[i].title,
+          storageArray[i].project,
+          storageArray[i].priority,
+          storageArray[i].date
+        )
+      );
+    }
+  }
 
   return taskArea;
 }
@@ -164,6 +198,8 @@ function createTaskArea() {
 export function appendTasks(array) {
   const taskArea = document.getElementById("task-area");
   taskArea.textContent = "";
+
+  window.localStorage.setItem("task", JSON.stringify(allTasks));
 
   let num = 0;
 
@@ -181,24 +217,25 @@ export function appendTasks(array) {
   }
 }
 
-export const appendArchives = () => {
+export function appendArchives() {
   const archiveMain = document.getElementById("archiveMain");
   archiveMain.textContent = "";
+  const storageArchive = JSON.parse(localStorage.getItem("archive"));
 
   let num = 0;
-  for (let i = 0; i < archiveTasks.length; i++) {
+  for (let i = 0; i < storageArchive.length; i++) {
     archiveMain.appendChild(
       addArchiveTask(
-        archiveTasks[i].title,
-        archiveTasks[i].project,
-        archiveTasks[i].priority,
-        archiveTasks[i].date,
+        storageArchive[i].title,
+        storageArchive[i].project,
+        storageArchive[i].priority,
+        storageArchive[i].date,
         num
       )
     );
     num++;
   }
-};
+}
 
 export const newTask = function (title, project, priority, date) {
   this.title = title;

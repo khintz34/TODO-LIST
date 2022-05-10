@@ -1,4 +1,10 @@
-import { newTask, allTasks, appendTasks, createBtn } from "./website.js";
+import {
+  newTask,
+  allTasks,
+  appendTasks,
+  createBtn,
+  appendArchives,
+} from "./website.js";
 import { projectArray } from "./projects.js";
 import { isBefore } from "date-fns";
 import {
@@ -96,7 +102,7 @@ export const createModal = (id) => {
       createNewModal(
         "form-archive",
         "form-header-archive",
-        "Completeed Task Arvhice",
+        "Completed Task Archive",
         "na",
         "na",
         "na",
@@ -303,4 +309,6 @@ export const modalClickArchive = () => {
   removePop.classList.remove("modal-hide");
   removePop.classList.add("modal-show");
   main.classList.add("blur");
+
+  appendArchives();
 };

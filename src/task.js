@@ -98,6 +98,12 @@ function addTaskDelete(num) {
     } else {
       allTasks.splice(num, 1);
     }
+
+    localStorage.removeItem("task");
+    console.log(
+      `localStorage.getItem after clear: ${localStorage.getItem("task")}`
+    );
+    localStorage.setItem("task", JSON.stringify(allTasks));
   });
 
   taskDelete.classList.add("task-item");
@@ -135,6 +141,10 @@ function addTaskComplete(num) {
           new newTask(titleTest, projectTest, priorityTest, dateTest)
         );
         allTasks.splice(index, 1);
+        localStorage.removeItem("task");
+        localStorage.setItem("task", JSON.stringify(allTasks));
+        localStorage.setItem("archive", JSON.stringify(archiveTasks));
+        console.log(archiveTasks);
       }
     });
 

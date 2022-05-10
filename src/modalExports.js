@@ -149,6 +149,7 @@ export function createDateInput(fdID) {
 export function createArchiveMain() {
   const archiveMain = document.createElement("div");
   archiveMain.setAttribute("id", "archiveMain");
+  archiveMain.textContent = "";
 
   return archiveMain;
 }
@@ -220,6 +221,7 @@ export const submitAddForm = (id, name, project, priority, date, modalID) => {
         dateValue.value
       )
     );
+    window.localStorage.setItem("task", "test");
   }
   updateModalClasses(modalID);
   nameValue.value = "";
@@ -292,4 +294,14 @@ function submitRemoveForm(id, project, modalID) {
   elementRemove.parentNode.removeChild(elementRemove);
   projectValue.value = projectArray[0];
   updateModalClasses(modalID);
+}
+
+export function updateLS() {
+  let values = [];
+  let keys = Object.keys(localStorage);
+  let i = keys.length;
+  while (i--) {
+    values.push(localStorage.getItem(keys[i]));
+  }
+  document.getElementById("test").textContent = values;
 }
